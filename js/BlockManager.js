@@ -8,6 +8,7 @@ class NoteManager{
         this.startTime = 0;
         this.startedPlaying = false;
         this.currentNoteIndex = 0;
+        this.song;
     }
 
     createPool(){
@@ -44,6 +45,10 @@ class NoteManager{
         this.startTime = this.game.time.now
         this.startedPlaying = true;
         this.song = song;
+        let musicConfig= {
+            volume: 0.2
+        }
+        song.play(musicConfig);
     }
 
 }

@@ -1,10 +1,12 @@
 class Song{
-    constructor(name, length, speed){
+    constructor(game, name, filePath, length, speed){
+        this.game = game;
         this.name = name;
         this.length = length;
         this.speed = speed;
-        this.spawnDelay = (height/this.speed)*1000;
-        this.buffer = 2000; //delay the start
+        this.spawnDelay = ((height-75)/this.speed)*1000;
+        this.buffer = 0; //delay the start
+        this.filePath = filePath;
         this.pattern = []
         /**
          * 
@@ -22,10 +24,14 @@ class Song{
         this.nextNoteIndex = 0;
         this.nextNote;
         this.finished = false;
+        this.music;
+        this.game.load.audio(this.name, this.filePath)
+        
     }
 
 
     createTempSong(){
+        this.music = this.game.sound.add(this.name);
         for(let i = 0; i < this.length/10000; i++){
             this.addNote(1000+(10000*i)+this.buffer, (width/2)-250)//left
             this.addNote(2000+(10000*i)+this.buffer, (width/2)+250)//right
@@ -38,7 +44,7 @@ class Song{
             this.addNote(9000+(10000*i)+this.buffer, (width/2))//mid
             this.addNote(10000+(10000*i)+this.buffer, (width/2))//mid
         }
-        console.log(this.pattern)
+        //console.log(this.pattern)
         this.next();
     }
 
@@ -55,6 +61,22 @@ class Song{
             this.finished = true;
         }
         console.log("next");
+    }
+
+    play(){
+        this.music.play();
+    }
+
+    load(data){
+        console.log(data)
+        this.music = this.game.sound.add(this.name);
+        for(let i = 0; i < data.length; i++){
+            data[i].hitTime += this.buffer
+            data[i].spawnTime = data[i].hitTime-this.spawnDelay;
+        }
+        this.pattern = data
+        console.log(this.pattern)
+        this.next();
     }
 
 }

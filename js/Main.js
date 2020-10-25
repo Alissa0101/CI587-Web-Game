@@ -18,8 +18,8 @@ var config = {
 
 var game = new Phaser.Game(config);
 let nm;
-let song = new Song("TEMP SONG", 10000, 500);
-song.createTempSong();
+let song;
+
 
 function preload ()
 {
@@ -28,12 +28,17 @@ function preload ()
     this.load.image('lane', 'assets/TEMP_Lane.png');
     this.load.image('note', 'assets/TEMP_Block.png');
     this.load.image('player', 'assets/TEMP_Player.png');
+
+    song = new Song(this, "I Like To Move It", "assets/songs/i_like_to_move_it.mp3", 10000, 500);
+    
 }
 
 function create ()
 {
     this.physics.world.setFPS(fps)
-    
+    //this.sound.add(song.name)
+    //song.createTempSong();
+    song.load(song_1);
 
     this.lane_left = this.add.image((width/2)-250, 2500, 'lane');
     this.lane_middle = this.add.image(width/2, 2500, 'lane');
