@@ -69,7 +69,7 @@ class Song{
 
     load(data){
         console.log(data)
-        this.music = this.game.sound.add(this.name);
+        this.music = this.game.sound.add(this.name, {volume: 0.25});
         for(let i = 0; i < data.length; i++){
             data[i].hitTime += this.buffer
             data[i].spawnTime = data[i].hitTime-this.spawnDelay;

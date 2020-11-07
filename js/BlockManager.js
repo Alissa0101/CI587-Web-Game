@@ -9,6 +9,7 @@ class NoteManager{
         this.startedPlaying = false;
         this.currentNoteIndex = 0;
         this.song;
+        this.nextHitNoteIndex = 0;
     }
 
     createPool(){
@@ -35,7 +36,19 @@ class NoteManager{
                 this.currentNoteIndex += 1;
                 this.song.next();
             }
-
+            if(this.poolSize-1 == this.nextHitNoteIndex){
+                this.nextHitNoteIndex = 0;
+            }
+            if(this.pool[this.nextHitNoteIndex].y >= height-75){
+                
+                //console.log("HIT", this.nextHitNoteIndex)
+                //this.pool[this.nextHitNoteIndex].x = 0;
+                let hit = checkOverlap(this.pool[this.nextHitNoteIndex], player);
+                if(hit == true){
+                    this.pool[this.nextHitNoteIndex].x = 0;
+                }
+                this.nextHitNoteIndex += 1;
+            }
 
         }
     }
@@ -45,10 +58,7 @@ class NoteManager{
         this.startTime = this.game.time.now
         this.startedPlaying = true;
         this.song = song;
-        let musicConfig= {
-            volume: 0.2
-        }
-        song.play(musicConfig);
+        song.play();
     }
 
 }

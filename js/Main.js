@@ -1,6 +1,5 @@
 const width = 1000;
 const height = 800;
-const fps = 60;
 
 var config = {
     type: Phaser.AUTO,
@@ -19,6 +18,7 @@ var config = {
 var game = new Phaser.Game(config);
 let nm;
 let song;
+let player;
 
 
 function preload ()
@@ -35,10 +35,10 @@ function preload ()
 
 function create ()
 {
-    this.physics.world.setFPS(fps)
+    //this.physics.world.setFPS(fps)
     //this.sound.add(song.name)
     //song.createTempSong();
-    song.load(song_1);
+    song.load(I_Like_To_Move_It);
 
     this.lane_left = this.add.image((width/2)-250, 2500, 'lane');
     this.lane_middle = this.add.image(width/2, 2500, 'lane');
@@ -48,7 +48,7 @@ function create ()
 
     nm.playSong(song);
 
-    this.player = this.add.image(width/2, height - 75, 'player');
+    player = this.add.image(width/2, height - 75, 'player');
 
     this.input.keyboard.on('keydown_A', movePlayerLeft, this);//create A key listener for moving the player left
     this.input.keyboard.on('keydown_D', movePlayerRight, this);//create A key listener for moving the player right
@@ -61,16 +61,49 @@ function update(){
 
 
 function movePlayerLeft(){
-    if(this.player.x == width/2){
-        this.player.x = (width/2)-250;
-    } else if(this.player.x == (width/2)+250){
-        this.player.x = width/2;
+    let x = (width/2)-250;
+    
+    
+    if(player.x == width/2){
+        x = (width/2)-250;
+    } else if(player.x == (width/2)+250){
+        x = width/2;
     }
+
+    let tween = this.tweens.add({
+        targets: player,
+        x: x,
+        ease: 'Back',       // 'Cubic', 'Elastic', 'Bounce', 'Back'
+        duration: 200,
+        repeat: 0,            // -1: infinity
+        yoyo: false
+    });
 }
 function movePlayerRight(){
-    if(this.player.x == (width/2)-250){
-        this.player.x = width/2;
-    } else if(this.player.x == width/2){
-        this.player.x = (width/2)+250;
+    let x = (width/2)+250;
+
+
+    if(player.x == (width/2)-250){
+        x = width/2;
+    } else if(player.x == width/2){
+        x = (width/2)+250;
     }
+
+    let tween = this.tweens.add({
+        targets: player,
+        x: x,
+        ease: 'Back',       // 'Cubic', 'Elastic', 'Bounce', 'Back'
+        duration: 200,
+        repeat: 0,            // -1: infinity
+        yoyo: false
+    });
+}
+
+function checkOverlap(spriteA, spriteB) {
+
+    var boundsA = spriteA.getBounds();
+    var boundsB = spriteB.getBounds();
+
+    return Phaser.Geom.Intersects.RectangleToRectangle(boundsA, boundsB);
+
 }

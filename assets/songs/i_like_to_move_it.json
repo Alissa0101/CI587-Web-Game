@@ -1,4 +1,4 @@
-let song_1 = [
+let I_Like_To_Move_It = [
     //intro
     {"hitTime": 3260, "spawnTime": 0, "side": 250},
     {"hitTime": 3260, "spawnTime": 0, "side": 750},
