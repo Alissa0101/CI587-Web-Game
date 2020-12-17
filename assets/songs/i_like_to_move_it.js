@@ -1,7 +1,6 @@
 let I_Like_To_Move_It = [
     //intro
-    {"hitTime": 3260, "spawnTime": 0, "side": 250},
-    {"hitTime": 3260, "spawnTime": 0, "side": 750},
+    {"hitTime": 3260, "spawnTime": 0, "side": 500},
     {"hitTime": 4150, "spawnTime": 0, "side": 250},
     {"hitTime": 5070, "spawnTime": 0, "side": 500},
     {"hitTime": 6000, "spawnTime": 0, "side": 750},
@@ -26,17 +25,11 @@ let I_Like_To_Move_It = [
     {"hitTime": 23530, "spawnTime": 0, "side": 500},
 
 
-    {"hitTime": 24000, "spawnTime": 0, "side": 250},
-    {"hitTime": 24000, "spawnTime": 0, "side": 750},
+    {"hitTime": 24000, "spawnTime": 0, "side": 500},
     {"hitTime": 24230, "spawnTime": 0, "side": 250},
-    {"hitTime": 24230, "spawnTime": 0, "side": 750},
-    {"hitTime": 24460, "spawnTime": 0, "side": 250},
-    {"hitTime": 24460, "spawnTime": 0, "side": 750},
+    {"hitTime": 24460, "spawnTime": 0, "side": 500},
     {"hitTime": 24690, "spawnTime": 0, "side": 250},
-    {"hitTime": 24690, "spawnTime": 0, "side": 750},
-    {"hitTime": 25150, "spawnTime": 0, "side": 250},
-    {"hitTime": 25150, "spawnTime": 0, "side": 750},
-    {"hitTime": 25610, "spawnTime": 0, "side": 250},
+    {"hitTime": 25150, "spawnTime": 0, "side": 500},
     {"hitTime": 25610, "spawnTime": 0, "side": 750},
 
 
@@ -65,6 +58,5 @@ let I_Like_To_Move_It = [
     {"hitTime": 39700, "spawnTime": 0, "side": 250},
     {"hitTime": 40160 , "spawnTime": 0, "side": 500},
 
-    {"hitTime": 40610, "spawnTime": 0, "side": 250},
-    {"hitTime": 40610, "spawnTime": 0, "side": 750},
+    {"hitTime": 40610, "spawnTime": 0, "side": 500},
 ]

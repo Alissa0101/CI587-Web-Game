@@ -1,5 +1,5 @@
-const width = 1000;
-const height = 800;
+const width = 1000;//window.innerWidth;
+const height = 800;//window.innerHeight;
 
 var config = {
     type: Phaser.AUTO,
@@ -16,89 +16,107 @@ var config = {
 };
 
 var game = new Phaser.Game(config);
-let nm;
-let song;
-let player;
+let nm;                             //note manager
+let song;                           //the song that will be played
+let gs = new GameState();           //Game state
+let player = new Player();          //the player
+let boss = new Boss();              //the boss
 
+
+let key_W;                          
+let key_A;
+let key_S;
+let key_D;
+let key_SPACE;
 
 function preload ()
 {
     //this.load.setBaseURL('localhost');//change later
 
+    this.cameras.main.backgroundColor = Phaser.Display.Color.HexStringToColor("#3498db");
+
     this.load.image('lane', 'assets/TEMP_Lane.png');
     this.load.image('note', 'assets/TEMP_Block.png');
     this.load.image('player', 'assets/TEMP_Player.png');
+    this.load.image('spark', 'assets/TEMP_Spark.png');
+    this.load.image('bullet', 'assets/TEMP_Bullet.png');
+    this.load.image('boss', 'assets/TEMP_Boss.png');
+    this.load.image('boss_left', 'assets/TEMP_Boss_Left.png');
+    this.load.image('boss_right', 'assets/TEMP_Boss_Left.png');
 
-    song = new Song(this, "I Like To Move It", "assets/songs/i_like_to_move_it.mp3", 10000, 500);
+
+    //song = new Song(this, "I Like To Move It", "assets/songs/i_like_to_move_it.mp3", 10000, 500);
+    song = new Song(this, "test", "assets/songs/i_like_to_move_it.mp3", 0, 500);
     
 }
 
 function create ()
 {
+    player.game = this;
+    boss.game = this;
+    gs.game = this;
     //this.physics.world.setFPS(fps)
-    //this.sound.add(song.name)
     //song.createTempSong();
     song.load(I_Like_To_Move_It);
+    //song.load(test_song);
 
-    this.lane_left = this.add.image((width/2)-250, 2500, 'lane');
-    this.lane_middle = this.add.image(width/2, 2500, 'lane');
-    this.lane_right = this.add.image((width/2)+250, 2500, 'lane');
+    //particles for when a note is hit
+    let particles = this.add.particles('spark');
+    nm = new NoteManager(this, 50, particles);
 
-    nm = new NoteManager(this, 50);
+    //the three lanes for the first part of the game
+    nm.lane_left = this.add.image((width/2)-250, 2500, 'lane');
+    nm.lane_middle = this.add.image(width/2, 2500, 'lane');
+    nm.lane_right = this.add.image((width/2)+250, 2500, 'lane');
 
-    nm.playSong(song);
+    nm.lane_left.visible = false;
+    nm.lane_middle.visible = false;
+    nm.lane_right.visible = false;
+    nm.emitter.visible = false;
 
-    player = this.add.image(width/2, height - 75, 'player');
+    //nm.playSong(song);
 
-    this.input.keyboard.on('keydown_A', movePlayerLeft, this);//create A key listener for moving the player left
-    this.input.keyboard.on('keydown_D', movePlayerRight, this);//create A key listener for moving the player right
+    //set up the player
+    player.scoreText = this.add.text(0, 0, player.score)
+
+    player.sprite = this.add.image(width/2, height - 75, 'player');
+
+    player.gun = new Gun(this, 50, player.sprite, 3);
+
+    //setup the boss
+    boss.sprite = this.physics.add.image(width/2, -1000, 'boss');
+    boss.left.sprite = this.physics.add.image(width/2, -1000, 'boss_left');
+    boss.right.sprite = this.physics.add.image(width/2, -1000, 'boss_right');
+
+    boss.gun = new Gun(this, 50, boss.sprite, 1);
+    boss.left.gun = new Gun(this, 25, boss.left.sprite, 1);
+    boss.right.gun = new Gun(this, 25, boss.right.sprite, 1);
+
+
+    //setup keyboard inputs
+    this.input.keyboard.on('keydown_A', function(){player.movePlayerTweenX((width/2)-250, this);}, this);//create A key listener for moving the player to the left
+    this.input.keyboard.on('keydown_S', function(){player.movePlayerTweenX(width/2, this);}, this);//create A key listener for moving the player to the middle
+    this.input.keyboard.on('keydown_D', function(){player.movePlayerTweenX((width/2)+250, this);}, this);//create A key listener for moving the player to the right
+
+    key_W = this.input.keyboard.addKey("W");
+    key_A = this.input.keyboard.addKey("A");
+    key_S = this.input.keyboard.addKey("S");
+    key_D = this.input.keyboard.addKey("D");
+    key_SPACE = this.input.keyboard.addKey("SPACE");
+
+    //this.input.keyboard.
+
 }
 
 function update(){
-    //console.log(this.note.y)
-    nm.update();
+    player.update();//run the update for the player
+    boss.update();//run the update for the boss
+    nm.update();//run the update for the note manager
+    gs.checkState();//run the update for the game state
 }
 
-
-function movePlayerLeft(){
-    let x = (width/2)-250;
-    
-    
-    if(player.x == width/2){
-        x = (width/2)-250;
-    } else if(player.x == (width/2)+250){
-        x = width/2;
-    }
-
-    let tween = this.tweens.add({
-        targets: player,
-        x: x,
-        ease: 'Back',       // 'Cubic', 'Elastic', 'Bounce', 'Back'
-        duration: 200,
-        repeat: 0,            // -1: infinity
-        yoyo: false
-    });
-}
-function movePlayerRight(){
-    let x = (width/2)+250;
-
-
-    if(player.x == (width/2)-250){
-        x = width/2;
-    } else if(player.x == width/2){
-        x = (width/2)+250;
-    }
-
-    let tween = this.tweens.add({
-        targets: player,
-        x: x,
-        ease: 'Back',       // 'Cubic', 'Elastic', 'Bounce', 'Back'
-        duration: 200,
-        repeat: 0,            // -1: infinity
-        yoyo: false
-    });
-}
-
+//check if two sprites are overlapping
+// only works foor rectangles
 function checkOverlap(spriteA, spriteB) {
 
     var boundsA = spriteA.getBounds();
@@ -107,3 +125,4 @@ function checkOverlap(spriteA, spriteB) {
     return Phaser.Geom.Intersects.RectangleToRectangle(boundsA, boundsB);
 
 }
+

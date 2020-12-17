@@ -4,7 +4,7 @@ class Song{
         this.name = name;
         this.length = length;
         this.speed = speed;
-        this.spawnDelay = ((height-75)/this.speed)*1000;
+        this.spawnDelay = ((height-150)/this.speed)*1000;
         this.buffer = 0; //delay the start
         this.filePath = filePath;
         this.pattern = []
@@ -68,14 +68,14 @@ class Song{
     }
 
     load(data){
-        console.log(data)
+        //console.log(data)
         this.music = this.game.sound.add(this.name, {volume: 0.25});
         for(let i = 0; i < data.length; i++){
             data[i].hitTime += this.buffer
             data[i].spawnTime = data[i].hitTime-this.spawnDelay;
         }
         this.pattern = data
-        console.log(this.pattern)
+        //console.log(this.pattern)
         this.next();
     }
 
