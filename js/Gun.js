@@ -61,4 +61,22 @@ class Gun{
         
     }
 
+    checkHits(targets){
+        let result = {}
+        for(let i = 0; i < this.bulletPoolSize; i++){
+            let bullet = this.bulletPool[i];
+            for(let j = 0; j < targets.length; j++){
+                let target = targets[j];
+                if(checkOverlap(bullet, target.sprite) == true){
+                    //if hit then hide the bullet
+                    bullet.y = -1000;
+                    bullet.setVelocity(0, 0);
+                    result[target.name] = true;
+                }
+            }
+            
+        }
+        return result;
+    }
+
 }

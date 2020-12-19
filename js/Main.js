@@ -46,7 +46,7 @@ function preload ()
 
 
     //song = new Song(this, "I Like To Move It", "assets/songs/i_like_to_move_it.mp3", 10000, 500);
-    song = new Song(this, "test", "assets/songs/i_like_to_move_it.mp3", 0, 500);
+    song = new Song(this, "test", "assets/songs/i_like_to_move_it.mp3", 1000);
     
 }
 
@@ -56,7 +56,6 @@ function create ()
     boss.game = this;
     gs.game = this;
     //this.physics.world.setFPS(fps)
-    //song.createTempSong();
     song.load(I_Like_To_Move_It);
     //song.load(test_song);
 
@@ -77,11 +76,15 @@ function create ()
     //nm.playSong(song);
 
     //set up the player
-    player.scoreText = this.add.text(0, 0, player.score)
+    player.text = this.add.text(0, 0, player.health)
 
     player.sprite = this.add.image(width/2, height - 75, 'player');
 
     player.gun = new Gun(this, 50, player.sprite, 3);
+    player.healthBarBG = this.add.rectangle(width/2, height-20, (width/2)+5, 30, 0x636E72)
+    player.healthBar = this.add.rectangle(width/2, height-20, width/2, 25, 0x00b16a)
+    player.healthBarBG.visible = false;
+    player.healthBar.visible = false;
 
     //setup the boss
     boss.sprite = this.physics.add.image(width/2, -1000, 'boss');
@@ -92,11 +95,16 @@ function create ()
     boss.left.gun = new Gun(this, 25, boss.left.sprite, 1);
     boss.right.gun = new Gun(this, 25, boss.right.sprite, 1);
 
+    boss.healthBarBG = this.add.rectangle(width/2, 25, (width/2)+5, 30, 0x636E72)
+    boss.healthBar = this.add.rectangle(width/2, 25, width/2, 25, 0xf03434)
+    boss.healthBarBG.visible = false;
+    boss.healthBar.visible = false;
+
 
     //setup keyboard inputs
-    this.input.keyboard.on('keydown_A', function(){player.movePlayerTweenX((width/2)-250, this);}, this);//create A key listener for moving the player to the left
-    this.input.keyboard.on('keydown_S', function(){player.movePlayerTweenX(width/2, this);}, this);//create A key listener for moving the player to the middle
-    this.input.keyboard.on('keydown_D', function(){player.movePlayerTweenX((width/2)+250, this);}, this);//create A key listener for moving the player to the right
+    this.input.keyboard.on('keydown_A', function(){player.movePlayerTween((width/2)-250);}, this);//create A key listener for moving the player to the left
+    this.input.keyboard.on('keydown_S', function(){player.movePlayerTween(width/2);}, this);//create A key listener for moving the player to the middle
+    this.input.keyboard.on('keydown_D', function(){player.movePlayerTween((width/2)+250);}, this);//create A key listener for moving the player to the right
 
     key_W = this.input.keyboard.addKey("W");
     key_A = this.input.keyboard.addKey("A");

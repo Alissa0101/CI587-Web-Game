@@ -36,9 +36,19 @@ class GameState{
                 }
                 break;
             case this.states.BOSS:
+                if(player.health <= 0){
+                    boss.moveToPos(width/2, height/2);
+                    //this doesn't work if x is the same as the player and y is different, why?
+                    player.movePlayerTween(player.x+1, height+50, 1500, true);
+                    this.exitState(this.state)
+                    this.enterState(this.states.LOSE)
+                }
+
                 //check if the boss has been defeated then switch to WIN
                 //if the player has died switch to LOSE
                 if(boss.health <= 0){
+                    boss.moveToPos(boss.x, height+500);
+                    player.movePlayerTween(width/2, height/2, 1500, true);
                     this.exitState(this.state)
                     this.enterState(this.states.WIN)
                 }
@@ -77,6 +87,11 @@ class GameState{
 
                 player.movementType = "lane"//switch movement type to lane
 
+                player.healthBar.width = 0;
+                player.healthBarBG.visible = true;
+                player.healthBar.visible = true;
+                
+
                 //show the lanes and emitter
                 nm.lane_left.visible = true;
                 nm.lane_middle.visible = true;
@@ -86,13 +101,16 @@ class GameState{
                 nm.createPool();
                 //play the song
                 nm.playSong(song);
+                player.maxHealth = nm.song.pattern.length;
                 this.state = stateToEnter
                 break;
             case this.states.BOSS:
                 //show the boss and enable player shooting
                 nm.song.play()
+                
+                let tempScore = player.score;
                 player.score = 0;
-                player.lives = 5;//player.lives = player.score//////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+                player.health = tempScore;
                 
                 //hide everything
                 
@@ -110,10 +128,12 @@ class GameState{
                 break;
             case this.states.WIN:
                 //display a win message
+                console.log("WIN")
                 this.state = stateToEnter
                 break;
             case this.states.LOSE:
                 //display a lose message
+                console.log("LOSE")
                 this.state = stateToEnter
                 break;
         }
@@ -135,9 +155,7 @@ class GameState{
             case this.states.BOSS:
                 //hide everything from the boss
                 boss.disable();
-                
-                player.gun.destroyBullets();
-                player.canShoot = false;
+                player.disable();
                 break;
         }
     }

@@ -1,8 +1,7 @@
 class Song{
-    constructor(game, name, filePath, length, speed){
+    constructor(game, name, filePath, speed){
         this.game = game;
         this.name = name;
-        this.length = length;
         this.speed = speed;
         this.spawnDelay = ((height-150)/this.speed)*1000;
         this.buffer = 0; //delay the start
@@ -30,24 +29,6 @@ class Song{
     }
 
 
-    createTempSong(){
-        this.music = this.game.sound.add(this.name);
-        for(let i = 0; i < this.length/10000; i++){
-            this.addNote(1000+(10000*i)+this.buffer, (width/2)-250)//left
-            this.addNote(2000+(10000*i)+this.buffer, (width/2)+250)//right
-            this.addNote(3000+(10000*i)+this.buffer, (width/2)-250)//left
-            this.addNote(4000+(10000*i)+this.buffer, (width/2)+250)//right
-            this.addNote(5000+(10000*i)+this.buffer, (width/2)-250)//left
-            this.addNote(6000+(10000*i)+this.buffer, (width/2))//mid
-            this.addNote(7000+(10000*i)+this.buffer, (width/2))//mid
-            this.addNote(8000+(10000*i)+this.buffer, (width/2))//mid
-            this.addNote(9000+(10000*i)+this.buffer, (width/2))//mid
-            this.addNote(10000+(10000*i)+this.buffer, (width/2))//mid
-        }
-        //console.log(this.pattern)
-        this.next();
-    }
-
     addNote(hitTime, side){
         let spawnTime = hitTime - this.spawnDelay;
         this.pattern.push({hitTime: hitTime, spawnTime: spawnTime, side: side});
@@ -60,7 +41,7 @@ class Song{
         if(nextNote == undefined){
             this.finished = true;
         }
-        console.log("next");
+        //console.log("next");
     }
 
     play(){

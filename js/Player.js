@@ -2,24 +2,16 @@ class Player{
     constructor(){
         this.game = game;
         this.sprite = undefined;
-        this.scoreNum = 0;
-        this.scoreText = undefined;
-        this.livesNum = 0;
+        this.text = undefined;
+        this.healthNum = 0;
         this.movementType = "none";
         this.speed = 15;
         this.gun = undefined;
         this.shootDelay = 100;
         this.lastShootTime = 0;
-    }
-
-    get score(){
-        return this.scoreNum;
-    }
-
-    set score(score){
-        this.scoreNum = score
-        this.scoreText.text = this.scoreNum
-        //set is used to update the score text
+        this.healthBar;
+        this.healthBarBG;
+        this.maxHealth = 0;
     }
 
     get x(){
@@ -38,13 +30,24 @@ class Player{
         this.sprite.y = y;
     }
 
-    get lives(){
-        return this.livesNum;
+    get health(){
+        return this.healthNum;
     }
 
-    set lives(lives){
-        this.livesNum = lives;
-        this.scoreText.text = this.livesNum
+    set health(health){
+        if(health >= 0){
+            this.healthNum = health;
+        }
+        this.text.text = this.health
+        this.healthBar.width = (width/2)*(this.health/this.maxHealth)
+    }
+
+    disable(){
+        this.gun.destroyBullets();
+        this.canShoot = false;
+        this.movementType = "none"
+        this.healthBarBG.visible = true;
+        this.healthBar.visible = true;
     }
 
     update(){
@@ -80,42 +83,34 @@ class Player{
                 }
             }
 
-            for(let i = 0; i < this.gun.bulletPoolSize; i++){
-                let bullet = this.gun.bulletPool[i];
-                let hit = false;
-                if(checkOverlap(bullet, boss.sprite) == true){
-                    boss.health_main -= 1;
-                    hit = true;
-                    console.log("Left: " + boss.left.health + " Main: " + boss.healthNum + " Right: " + boss.right.health + " Health: " + boss.health)
-                }
-                if(checkOverlap(bullet, boss.left.sprite) == true){
-                    boss.left.health -= 1;
-                    hit = true;
-                    console.log("Left: " + boss.left.health + " Main: " + boss.healthNum + " Right: " + boss.right.health + " Health: " + boss.health)
-                }
-                if(checkOverlap(bullet, boss.right.sprite) == true){
-                    boss.right.health -= 1;
-                    hit = true;
-                    console.log("Left: " + boss.left.health + " Main: " + boss.healthNum + " Right: " + boss.right.health + " Health: " + boss.health)
-                }
-                if(hit == true){
-                    bullet.y = -1000;
-                    bullet.setVelocity(0, 0);
-                }
+            let hits = this.gun.checkHits([{name: "main", sprite: boss.sprite}, {name: "left", sprite: boss.left.sprite}, {name: "right", sprite: boss.right.sprite}])
+            //console.log(hits)
+            if(hits["main"] == true){
+                console.log("hit main")
+                boss.health_main -= 1;
+            }
+            if(hits["left"] == true){
+                console.log("hit left")
+                boss.left.health -= 1;
+            }
+            if(hits["right"] == true){
+                console.log("hit right")
+                boss.right.health -= 1;
             }
 
         }
     }
 
 
-    movePlayerTweenX(x){
-        if(this.movementType == "lane"){
+    movePlayerTween(x, y=this.y, time=100, override=false){
+        if(this.movementType == "lane" || override == true){
             if(x != this.x){
                 this.game.tweens.add({
                     targets: this.sprite,
                     x: x,
+                    y: y,
                     ease: 'Back',       // 'Cubic', 'Elastic', 'Bounce', 'Back'
-                    duration: 100,
+                    duration: time,
                     repeat: 0,            // -1: infinity
                     yoyo: false
                 });

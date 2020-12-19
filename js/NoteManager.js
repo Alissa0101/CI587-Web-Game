@@ -66,7 +66,7 @@ class NoteManager{
                 }
                 this.nextHitNoteIndex += 1;
                 this.totalNotesPassed += 1;
-                console.log(this.totalNotesPassed , this.song.pattern.length)
+                //console.log(this.totalNotesPassed , this.song.pattern.length)
             }
             if(this.totalNotesPassed == this.song.pattern.length){
                 this.finished = true
@@ -86,7 +86,7 @@ class NoteManager{
 
     hitNote(){
         
-        player.score += 1;
+        player.health += 1;
         this.emitter.explode(10, this.pool[this.nextHitNoteIndex].x, height -75);
         this.pool[this.nextHitNoteIndex].x = -10000;
     }

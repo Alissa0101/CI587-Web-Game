@@ -11,12 +11,14 @@ class BossArm{
         this.shootDelay = 500;
         this.lastShootTime = 0;
         this.canShoot = true;
+        this.mainHealthBarUpdate;
     }
 
     set health(health){
         if(health >= 0){
             this.healthNum = health;
         }
+        this.mainHealthBarUpdate();
     }
 
     get health(){
@@ -25,7 +27,6 @@ class BossArm{
 
     disable(){
         this.canShoot = false;
-        this.gun.destroyBullets();
         this.sprite.visible = false
     }
 
@@ -38,7 +39,10 @@ class Boss{
         this.isEnabled = false;
         this.xPos = 0;
         this.yPos = 0;
-        this.healthNum = 100;//heath of the boss's body
+        this.healthNum = 200;//heath of the boss's body
+        this.healthBarBG;
+        this.healthBar;
+        this.maxHealth = 0;
 
         this.left = new BossArm(-175, 0);
         this.right = new BossArm(175, 0);
@@ -50,9 +54,9 @@ class Boss{
         this.canShoot = false;
         this.canShootFromMain = true;
         this.baseMoveDelay = 10000;
-        this.moveDelay = 5000;
+        this.moveDelay = 7500;
         this.lastMoveTime = 1;
-        this.movePositions = [{x:250, y:150}, {x:width/2, y:200}, {x:width-250, y:150}, {x:width/2, y:100}]//the positions the boss will switch between
+        this.movePositions = [{x:width/2, y:200}, {x:(width/2)-250, y:150}, {x:width/2, y:100}, {x:(width/2)+250, y:200}, {x:(width/2)-250, y:100}]//the positions the boss will switch between
         this.movePositionIndex = 0;
         this.totalMovesMade = 0;
         this.lastMoveHealth = 100000;
@@ -67,18 +71,25 @@ class Boss{
         this.lastMoveHealth = this.health;
         this.canShoot = true;
         this.moveToPos(width/2, 150);
+        this.healthBarBG.visible = true;
+        this.healthBar.visible = true;
         this.isEnabled = true;
+        //this is so I don't have to repeat the code in the arms
+        //the bind makes sure it uses the variables from the boss instead of the arm
+        this.left.mainHealthBarUpdate = this.healthBarUpdate.bind(this);
+        this.right.mainHealthBarUpdate = this.healthBarUpdate.bind(this);
+        this.maxHealth = this.health;
     }
 
     //When the boss is defeated it is cleaned up, like removing the bullets from all the guns and disabling the shooting
-    //it also moves below the screen
     disable(){
         console.log("Disabling the boss")
-        this.moveToPos(this.x, height+500);
         this.gun.destroyBullets();
         this.left.gun.destroyBullets();
         this.right.gun.destroyBullets();
         this.canShoot = false;
+        this.healthBarBG.visible = false;
+        this.healthBar.visible = false;
         this.isEnabled = false;
     }
 
@@ -87,6 +98,7 @@ class Boss{
         if(health >= 0){
             this.healthNum = health;
         }
+        this.healthBarUpdate();
     }
 
     get health_main(){
@@ -122,6 +134,9 @@ class Boss{
         return this.yPos;
     }
 
+    healthBarUpdate(){
+        this.healthBar.width = (width/2)*(this.health/this.maxHealth)
+    }
 
     update(){
         if(this.isEnabled == true){//only run if the boss is enabled
@@ -129,15 +144,13 @@ class Boss{
             if(this.canShoot == true){
                 //check if the gun can shoot and wait for the delay to end
                 if(this.left.canShoot == true && this.game.time.now - this.left.lastShootTime >= this.left.shootDelay){
-                    this.left.gun.shoot(player.sprite.x, player.sprite.y);
+                    this.left.gun.shoot(player.x, player.y);
                     this.left.lastShootTime = this.game.time.now;
                 }
                 if(this.right.canShoot == true && this.game.time.now - this.right.lastShootTime >= this.right.shootDelay){
-                    this.right.gun.shoot(player.sprite.x, player.sprite.y);
+                    this.right.gun.shoot(player.x, player.y);
                     this.right.lastShootTime = this.game.time.now;
                 }
-                //this.gun.shoot(player.sprite.x, player.sprite.y);
-                //this.gun.pulse("up");
 
                 //the main body of the boss uses a pulse show. it shoots 9 bullets in a spread
                 if(this.canShootFromMain == true && this.game.time.now - this.lastShootTime >= this.shootDelay){
@@ -148,10 +161,26 @@ class Boss{
                 
             }
         
-            
 
-            //move the boss if it has taken 15 damage, or it has been in he same place for too long
-            if(this.game.time.now - this.lastMoveTime >= this.moveDelay || this.lastMoveHealth - this.health >= 15){
+            let leftHits = this.left.gun.checkHits([{name: "player", sprite: player.sprite}]);
+            let mainHits = this.gun.checkHits([{name: "player", sprite: player.sprite}]);
+            let rightHits = this.right.gun.checkHits([{name: "player", sprite: player.sprite}]);
+
+            if(leftHits["player"] == true){
+                player.health -= 1;
+                console.log("Player hit by left arm")
+            }
+            if(mainHits["player"] == true){
+                player.health -= 1;
+                console.log("Player hit by main body")
+            }
+            if(rightHits["player"] == true){
+                player.health -= 1;
+                console.log("Player hit by right arm")
+            }
+
+            //move the boss if it has taken 20 damage, or it has been in he same place for too long
+            if(this.game.time.now - this.lastMoveTime >= this.moveDelay || this.lastMoveHealth - this.health >= 20){
                 this.lastMoveTime = this.game.time.now;
                 this.totalMovesMade += 1;
                 this.movePositionIndex = this.totalMovesMade % this.movePositions.length;
@@ -173,7 +202,7 @@ class Boss{
             x: x,
             y, y,
             ease: 'cubic',       // 'Cubic', 'Elastic', 'Bounce', 'Back'
-            duration: 1000,
+            duration: 1500,
             repeat: 0,            // -1: infinity
             yoyo: false,
             onComplete: function(){this.canShoot = true;}.bind(this)//unpause shooting
